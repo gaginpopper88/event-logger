@@ -5,184 +5,97 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Event Logger</title>
   <style>
-    :root {
-      --bg: #0b0d12;
-      --panel: #121826;
-      --panel2: #0f1420;
-      --text: #e8eefc;
-      --muted: #9fb0d0;
-      --border: rgba(255,255,255,0.12);
-      --shadow: 0 10px 30px rgba(0,0,0,0.35);
-      --radius: 16px;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    :root{
+      --bg:#0b0d12; --panel:#121826; --text:#e8eefc; --muted:#9fb0d0;
+      --border:rgba(255,255,255,.12); --shadow:0 10px 30px rgba(0,0,0,.35);
+      --radius:16px; --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+      --sans:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
     }
-
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: var(--sans);
-      background: radial-gradient(1200px 800px at 20% 10%, rgba(96,165,250,0.12), transparent 55%),
-                  radial-gradient(1000px 700px at 90% 25%, rgba(167,139,250,0.10), transparent 60%),
-                  var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      display: grid;
-      place-items: center;
-      padding: 18px;
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:var(--sans); color:var(--text);
+      background:
+        radial-gradient(1200px 800px at 20% 10%, rgba(96,165,250,0.12), transparent 55%),
+        radial-gradient(1000px 700px at 90% 25%, rgba(167,139,250,0.10), transparent 60%),
+        var(--bg);
+      min-height:100vh; display:grid; place-items:center; padding:18px;
     }
-
-    .wrap {
-      width: min(980px, 100%);
-      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow: hidden;
+    .wrap{
+      width:min(980px,100%); border:1px solid var(--border);
+      border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden;
+      background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
     }
-
-    header {
-      padding: 18px 18px 12px;
-      border-bottom: 1px solid var(--border);
-      background: rgba(0,0,0,0.15);
+    header{
+      padding:18px 18px 12px; border-bottom:1px solid var(--border);
+      background:rgba(0,0,0,0.15);
     }
-
-    h1 {
-      margin: 0 0 6px;
-      font-size: 20px;
-      font-weight: 700;
-      letter-spacing: 0.2px;
+    h1{margin:0 0 6px; font-size:20px; font-weight:700}
+    .sub{margin:0; color:var(--muted); font-size:13px}
+    .content{padding:18px; display:grid; gap:14px}
+    .row{display:grid; gap:10px}
+    .stampRow{
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
     }
-    .sub {
-      margin: 0;
-      color: var(--muted);
-      font-size: 13px;
+    input[type="date"], input[type="time"]{
+      padding:10px 12px; border-radius:12px; border:1px solid var(--border);
+      background:rgba(0,0,0,0.20); color:var(--text); outline:none;
+      font-size:14px;
     }
-
-    .content {
-      padding: 18px;
-      display: grid;
-      gap: 14px;
+    textarea{
+      width:100%; min-height:72px; resize:vertical; padding:12px;
+      border-radius:12px; border:1px solid var(--border);
+      background:rgba(0,0,0,0.20); color:var(--text); outline:none;
+      font-size:15px; line-height:1.3;
     }
-
-    .row {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
+    textarea::placeholder{color:rgba(159,176,208,0.75)}
+    .buttons{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    button{
+      appearance:none; border:1px solid var(--border);
+      background:rgba(255,255,255,0.06); color:var(--text);
+      padding:10px 14px; border-radius:12px; font-weight:650;
+      cursor:pointer; transition:transform .04s ease, background .15s ease, border-color .15s ease;
+      user-select:none;
     }
-
-    textarea {
-      width: 100%;
-      min-height: 72px;
-      resize: vertical;
-      padding: 12px 12px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: rgba(0,0,0,0.20);
-      color: var(--text);
-      outline: none;
-      font-size: 15px;
-      line-height: 1.3;
+    button:hover{background:rgba(255,255,255,0.10); border-color:rgba(255,255,255,0.22)}
+    button:active{transform:translateY(1px)}
+    .primary{background:rgba(96,165,250,0.20); border-color:rgba(96,165,250,0.35)}
+    .primary:hover{background:rgba(96,165,250,0.28); border-color:rgba(96,165,250,0.48)}
+    .danger{background:rgba(248,113,113,0.16); border-color:rgba(248,113,113,0.30)}
+    .danger:hover{background:rgba(248,113,113,0.22); border-color:rgba(248,113,113,0.44)}
+    .hint{margin-left:auto; color:var(--muted); font-size:13px}
+    .logpane{border:1px solid var(--border); border-radius:14px; background:rgba(0,0,0,0.22); overflow:hidden}
+    .loghead{
+      padding:10px 12px; display:flex; align-items:center; justify-content:space-between;
+      gap:10px; border-bottom:1px solid var(--border); background:rgba(0,0,0,0.18);
+      flex-wrap:wrap;
     }
-
-    textarea::placeholder { color: rgba(159,176,208,0.75); }
-
-    .buttons {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
+    .count{color:var(--muted); font-size:13px}
+    .loglist{
+      max-height:48vh; overflow:auto; padding:10px 12px 12px;
+      font-family:var(--mono); font-size:13px; line-height:1.35; white-space:pre-wrap; word-break:break-word;
     }
+.entry {
+  transition: opacity 180ms ease, transform 180ms ease, max-height 220ms ease, margin 220ms ease, padding 220ms ease;
+  max-height: 200px; /* just needs to be "big enough" for a normal entry */
+  overflow: hidden;
+}
 
-    button {
-      appearance: none;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.06);
-      color: var(--text);
-      padding: 10px 14px;
-      border-radius: 12px;
-      font-weight: 650;
-      cursor: pointer;
-      transition: transform 0.04s ease, background 0.15s ease, border-color 0.15s ease;
-      user-select: none;
+.entry.deleting {
+  opacity: 0;
+  transform: translateY(-4px);
+  max-height: 0;
+  margin-bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}    
+.entry{
+      padding:8px; border-radius:10px; background:rgba(255,255,255,0.03);
+      border:1px solid rgba(255,255,255,0.08); margin-bottom:8px;
     }
-
-    button:hover { background: rgba(255,255,255,0.10); border-color: rgba(255,255,255,0.22); }
-    button:active { transform: translateY(1px); }
-
-    .primary {
-      background: rgba(96,165,250,0.20);
-      border-color: rgba(96,165,250,0.35);
-    }
-    .primary:hover { background: rgba(96,165,250,0.28); border-color: rgba(96,165,250,0.48); }
-
-    .danger {
-      background: rgba(248,113,113,0.16);
-      border-color: rgba(248,113,113,0.30);
-    }
-    .danger:hover { background: rgba(248,113,113,0.22); border-color: rgba(248,113,113,0.44); }
-
-    .hint {
-      margin-left: auto;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .logpane {
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      background: rgba(0,0,0,0.22);
-      overflow: hidden;
-    }
-
-    .loghead {
-      padding: 10px 12px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      border-bottom: 1px solid var(--border);
-      background: rgba(0,0,0,0.18);
-    }
-
-    .count {
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .loglist {
-      max-height: 48vh;
-      overflow: auto;
-      padding: 10px 12px 12px;
-      font-family: var(--mono);
-      font-size: 13px;
-      line-height: 1.35;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .entry {
-      padding: 8px 8px;
-      border-radius: 10px;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.08);
-      margin-bottom: 8px;
-    }
-
-    .ts { color: rgba(159,176,208,0.95); }
-    .msg { color: var(--text); }
-
-    .empty {
-      color: rgba(159,176,208,0.75);
-      padding: 10px 4px;
-      font-family: var(--sans);
-    }
-
-    .footer {
-      padding: 0 18px 18px;
-      color: rgba(159,176,208,0.70);
-      font-size: 12px;
-    }
+    .ts{color:rgba(159,176,208,0.95)}
+    .msg{color:var(--text)}
+    .empty{color:rgba(159,176,208,0.75); padding:10px 4px; font-family:var(--sans)}
+    .footer{padding:0 18px 18px; color:rgba(159,176,208,0.70); font-size:12px}
   </style>
 </head>
 <body>
@@ -194,7 +107,14 @@
 
     <div class="content">
       <div class="row">
-        <textarea id="input" placeholder="Type your event… (Enter logs, Ctrl/Cmd+Enter to log)"></textarea>
+
+        <div class="stampRow">
+          <input type="date" id="manualDate">
+          <input type="time" id="manualTime" step="1">
+          <button id="nowBtn" type="button">Now</button>
+        </div>
+
+        <textarea id="input" placeholder="Type your event… (Ctrl/Cmd+Enter to log)"></textarea>
 
         <div class="buttons">
           <button id="logBtn" class="primary" type="button">Log</button>
@@ -206,9 +126,13 @@
       <div class="logpane">
         <div class="loghead">
           <div class="count" id="countLabel">0 entries</div>
-          <button id="copyBtn" type="button" title="Copy all logs to clipboard">Copy All</button>
-        <button id="orderBtn" type="button">Newest First</button>
-        <button id="exportBtn" type="button">Export .txt</button>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+<div style="display:flex; gap:10px; flex-wrap:wrap;">
+  <button id="copyBtn" type="button" title="Copy all logs to clipboard">Copy All</button>
+  <button id="orderBtn" type="button">Newest First</button>
+  <button id="exportBtn" type="button">Export .txt</button>
+</div>
+          </div>
         </div>
         <div id="logList" class="loglist"></div>
       </div>
@@ -222,39 +146,25 @@
   <script>
     (function () {
       const STORAGE_KEY = "event_logger_v1";
-
       const ORDER_KEY = "event_logger_order_v1";
 
       const inputEl = document.getElementById("input");
       const logBtn = document.getElementById("logBtn");
       const clearBtn = document.getElementById("clearBtn");
       const copyBtn = document.getElementById("copyBtn");
+      const exportBtn = document.getElementById("exportBtn");
+      const orderBtn = document.getElementById("orderBtn");
+
+      const manualDateEl = document.getElementById("manualDate");
+      const manualTimeEl = document.getElementById("manualTime");
+      const nowBtn = document.getElementById("nowBtn");
+
       const logListEl = document.getElementById("logList");
       const countLabel = document.getElementById("countLabel");
-      const orderBtn = document.getElementById("orderBtn");
-      const exportBtn = document.getElementById("exportBtn");
 
       /** @type {{tsISO:string, tsPretty:string, text:string}[]} */
       let logs = loadLogs();
-
       let isReversed = loadOrderPreference();
-
-      function nowStamp() {
-        const d = new Date();
-        const tsPretty = new Intl.DateTimeFormat(undefined, {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-        }).format(d);
-
-        return {
-          tsISO: d.toISOString(),
-          tsPretty,
-        };
-      }
 
       function loadLogs() {
         try {
@@ -262,29 +172,36 @@
           if (!raw) return [];
           const parsed = JSON.parse(raw);
           if (!Array.isArray(parsed)) return [];
-          // Basic validation
-          return parsed
-            .filter(x => x && typeof x.tsISO === "string" && typeof x.tsPretty === "string" && typeof x.text === "string");
+          return parsed.filter(x =>
+            x && typeof x.tsISO === "string" && typeof x.tsPretty === "string" && typeof x.text === "string"
+          );
         } catch {
           return [];
         }
       }
 
-function loadOrderPreference() {
-  const raw = localStorage.getItem(ORDER_KEY);
-  return raw === "true"; // defaults to false if null
-}
-
-function updateOrderButton() {
-  orderBtn.textContent = isReversed ? "Oldest First" : "Newest First";
-}
-
-function saveOrderPreference() {
-  localStorage.setItem(ORDER_KEY, isReversed);
-}
-
       function saveLogs() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+      }
+
+      function loadOrderPreference() {
+        const raw = localStorage.getItem(ORDER_KEY);
+        return raw === "true";
+      }
+
+      function saveOrderPreference() {
+        localStorage.setItem(ORDER_KEY, String(isReversed));
+      }
+
+      function fillNow() {
+        const d = new Date();
+        manualDateEl.value = d.toISOString().slice(0, 10);
+        manualTimeEl.value = d.toTimeString().slice(0, 8);
+      }
+
+      function updateOrderButton() {
+        // Label describes what clicking it will do next
+        orderBtn.textContent = isReversed ? "Oldest First" : "Newest First";
       }
 
       function setCount() {
@@ -304,30 +221,92 @@ function saveOrderPreference() {
           return;
         }
 
-const displayLogs = isReversed
-  ? logs.slice().reverse()
-  : logs;
+        // Sort by actual timestamp (ascending)
+        const sorted = logs.slice().sort((a, b) => new Date(a.tsISO) - new Date(b.tsISO));
+        const displayLogs = isReversed ? sorted.slice().reverse() : sorted;
 
-for (const item of displayLogs) {
+        for (const item of displayLogs) {
+const div = document.createElement("div");
+div.className = "entry";
+div.dataset.tsiso = item.tsISO;
+div.dataset.text = item.text;
 
-          const div = document.createElement("div");
-          div.className = "entry";
+const topRow = document.createElement("div");
+topRow.style.display = "flex";
+topRow.style.alignItems = "center";
+topRow.style.justifyContent = "space-between";
+topRow.style.gap = "10px";
 
-          const ts = document.createElement("div");
-          ts.className = "ts";
-          ts.textContent = item.tsPretty;
+const ts = document.createElement("div");
+ts.className = "ts";
+ts.textContent = item.tsPretty;
 
-          const msg = document.createElement("div");
-          msg.className = "msg";
-          msg.textContent = item.text;
+const delBtn = document.createElement("button");
+delBtn.type = "button";
+delBtn.className = "";
+delBtn.style.border = "1px solid rgba(255,255,255,0.12)";
+delBtn.style.background = "rgba(255,255,255,0.05)";
+delBtn.style.padding = "6px 8px";
+delBtn.style.borderRadius = "10px";
+delBtn.style.display = "flex";
+delBtn.style.alignItems = "center";
+delBtn.style.justifyContent = "center";
 
-          div.appendChild(ts);
-          div.appendChild(msg);
-          logListEl.appendChild(div);
+// SVG trash icon
+delBtn.innerHTML = `
+<svg xmlns="http://www.w3.org/2000/svg" 
+     width="16" height="16" 
+     viewBox="0 0 24 24" 
+     fill="none" 
+     stroke="currentColor" 
+     stroke-width="2" 
+     stroke-linecap="round" 
+     stroke-linejoin="round">
+  <polyline points="3 6 5 6 21 6"></polyline>
+  <path d="M19 6l-1 14H6L5 6"></path>
+  <path d="M10 11v6"></path>
+  <path d="M14 11v6"></path>
+  <path d="M9 6V4h6v2"></path>
+</svg>
+`;
+
+delBtn.title = "Delete this log entry";
+
+delBtn.addEventListener("click", () => {
+  const ok = confirm("Delete this log entry? This cannot be undone.");
+  if (!ok) return;
+
+  // 1) animate out
+  div.classList.add("deleting");
+
+  // 2) after animation, remove from data + persist + rerender
+  const ANIM_MS = 240; // should be slightly >= your CSS timings
+  setTimeout(() => {
+    const tsISO = div.dataset.tsiso;
+    const text = div.dataset.text;
+
+    const idx = logs.findIndex(x => x.tsISO === tsISO && x.text === text);
+    if (idx >= 0) {
+      logs.splice(idx, 1);
+      saveLogs();
+    }
+    render();
+  }, ANIM_MS);
+});
+
+topRow.appendChild(ts);
+topRow.appendChild(delBtn);
+
+const msg = document.createElement("div");
+msg.className = "msg";
+msg.textContent = item.text;
+
+div.appendChild(topRow);
+div.appendChild(msg);
+logListEl.appendChild(div);
         }
 
         setCount();
-        // auto-scroll to bottom
         logListEl.scrollTop = logListEl.scrollHeight;
       }
 
@@ -335,11 +314,28 @@ for (const item of displayLogs) {
         const cleaned = text.trim();
         if (!cleaned) return;
 
-        const stamp = nowStamp();
-        logs.push({ tsISO: stamp.tsISO, tsPretty: stamp.tsPretty, text: cleaned });
+        if (!manualDateEl.value || !manualTimeEl.value) return;
+
+        const combined = new Date(`${manualDateEl.value}T${manualTimeEl.value}`);
+        if (Number.isNaN(combined.getTime())) return;
+
+        const tsISO = combined.toISOString();
+        const tsPretty = new Intl.DateTimeFormat(undefined, {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        }).format(combined);
+
+        logs.push({ tsISO, tsPretty, text: cleaned });
         saveLogs();
         render();
       }
+
+      // Events
+      nowBtn.addEventListener("click", fillNow);
 
       logBtn.addEventListener("click", () => {
         addLog(inputEl.value);
@@ -347,61 +343,35 @@ for (const item of displayLogs) {
         inputEl.focus();
       });
 
-orderBtn.addEventListener("click", () => {
-  isReversed = !isReversed;
-  saveOrderPreference();
-  updateOrderButton();
-  render();
-});
-
-exportBtn.addEventListener("click", () => {
-  if (logs.length === 0) return;
-
-  const text = logs
-    .map(x => `${x.tsPretty}  ${x.text}`)
-    .join("\n");
-
-  const blob = new Blob([text], { type: "text/plain" });
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement("a");
-  const now = new Date();
-  const filename = `event-log-${now.toISOString().slice(0,19).replace(/:/g, "-")}.txt`;
-
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-});
-
       clearBtn.addEventListener("click", () => {
         if (logs.length === 0) return;
-
         const ok = confirm("Clear ALL logged entries? This cannot be undone.");
         if (!ok) return;
-
         logs = [];
         saveLogs();
         render();
         inputEl.focus();
       });
 
+      orderBtn.addEventListener("click", () => {
+        isReversed = !isReversed;
+        saveOrderPreference();
+        updateOrderButton();
+        render();
+      });
+
       copyBtn.addEventListener("click", async () => {
         if (logs.length === 0) return;
+        const sorted = logs.slice().sort((a, b) => new Date(a.tsISO) - new Date(b.tsISO));
+        const displayLogs = isReversed ? sorted.slice().reverse() : sorted;
 
-        const text = logs
-          .map(x => `${x.tsPretty}  ${x.text}`)
-          .join("\n");
+        const text = displayLogs.map(x => `${x.tsPretty}  ${x.text}`).join("\n");
 
         try {
           await navigator.clipboard.writeText(text);
           copyBtn.textContent = "Copied!";
           setTimeout(() => (copyBtn.textContent = "Copy All"), 900);
         } catch {
-          // Fallback if clipboard isn't available
           const ta = document.createElement("textarea");
           ta.value = text;
           document.body.appendChild(ta);
@@ -413,7 +383,30 @@ exportBtn.addEventListener("click", () => {
         }
       });
 
-      // Keyboard shortcut: Ctrl/Cmd + Enter logs
+      exportBtn.addEventListener("click", () => {
+        if (logs.length === 0) return;
+
+        const sorted = logs.slice().sort((a, b) => new Date(a.tsISO) - new Date(b.tsISO));
+        const displayLogs = isReversed ? sorted.slice().reverse() : sorted;
+
+        const text = displayLogs.map(x => `${x.tsPretty}  ${x.text}`).join("\n");
+
+        const blob = new Blob([text], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        const now = new Date();
+        const filename = `event-log-${now.toISOString().slice(0,19).replace(/:/g, "-")}.txt`;
+
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+
       inputEl.addEventListener("keydown", (e) => {
         const isCmdOrCtrl = e.metaKey || e.ctrlKey;
         if (isCmdOrCtrl && e.key === "Enter") {
@@ -422,8 +415,9 @@ exportBtn.addEventListener("click", () => {
         }
       });
 
-      // Initial render
+      // Init
       updateOrderButton();
+      fillNow();
       render();
       inputEl.focus();
     })();
